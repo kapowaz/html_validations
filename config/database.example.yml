@@ -1,0 +1,11 @@
+# Make a copy of this file called database.yml with the real database credentials below
+:development: &defaults
+  :adapter: mysql
+  :database: validations_development
+  :username: validations
+  :password: 
+  :host: localhost
+
+:production:
+  <<: *defaults
+  :database: validations_production

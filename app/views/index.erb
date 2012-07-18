@@ -1,0 +1,63 @@
+<p>Create a user account here.</p>
+
+<form action="/register" method="post" data-validation-message="The form below has some problems. Please correct them before trying again.">
+  <dl class="registration">
+    <dt><label for="user_registration_login">Choose a login name (6-20 characters)</label></dt>
+    <dd><input type="text" 
+      id="user_registration_login" name="login" 
+      data-validation-presence 
+      data-validation-length="6..20" 
+      data-validation-unique="/available/login" 
+      data-validation-presence-message="You need to choose a login name"
+      data-validation-length-message="Your login name needs to be between 6 and 20 characters long"
+      data-validation-unique-message="Somebody has already registered using that login name"></dd>
+
+    <dt><label for="user_registration_email">Enter your email address</label></dt>
+    <dd><input type="email" id="user_registration_email" name="email"
+      data-validation-presence
+      data-validation-unique="/available/email"
+      data-validation-format="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
+      data-validation-presence-message="You need to provide your email address"
+      data-validation-unique-message="Somebody has already registered using that email address"
+      data-validation-format-message="That doesn't look like an email address"></dd>
+      
+    <dt><label for="user_registration_email_confirmation">Enter your email address again</label></dt>
+    <dd><input type="email" id="user_registration_email_confirmation" name="email_confirmation"
+      data-validation-presence 
+      data-validation-identical="email"
+      data-validation-presence-message="You need to confirm your email by typing it again here"
+      data-validation-identical-message="Email address and and confirmation need to be the same"></dd>
+
+    <dt><label for="user_registration_displayname">Enter your name as you'd like it displayed to other users</label></dt>
+    <dd><input type="text" id="user_registration_displayname" name="displayname"></dd>
+
+    <dt><label for="user_registration_password">Enter a password</label></dt>
+    <dd><input type="password" id="user_registration_password" name="password" 
+      data-validation-presence 
+      data-validation-presence-message="You need to enter a password"></dd>
+
+    <dt><label for="user_registration_password_confirmation">Enter the same password again</label></dt>
+    <dd><input type="password" id="user_registration_password_confirmation" name="password_confirmation" 
+      data-validation-presence 
+      data-validation-identical="password"
+      data-validation-presence-message="You need to confirm your password by typing it again here"
+      data-validation-identical-message="Password and confirmation need to be the same"></dd>
+      
+    <dt><label for="user_registration_referrer">How were you referred to this site?</label></dt>
+    <dd><select id="user_registration_referrer" name="referrer">
+      <option value="withheld">I'd rather not say</option>
+      <option value="friend">Referred by a friend</option>
+      <option value="searchengine">Search engine</option>
+    </select></dd>
+    
+    <dt><label for="user_registration_referrer_searchengine">Which search engine were you referred by?</label></dt>
+    <dd><input type="text" id="user_registration_referrer_searchengine" name="searchengine"
+      data-validation-prerequisite="referrer"
+      data-validation-prerequisite-value="searchengine"
+      data-validation-prerequisite-message="Please tell us which search engine you were referred by"></dd>
+  </dl>
+  
+  <input type="submit" value="Register">
+</form>
+
+<%= @errors unless @errors.nil? %>

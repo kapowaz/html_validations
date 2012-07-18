@@ -1,0 +1,87 @@
+body {
+  margin: 10px auto;
+  width: 500px;
+  padding: 0;
+  font-family: "Helvetica Neue LT Std", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 1.2em;
+  line-height: 1.5em;
+  color: white;
+  background-color: rgb(80,80,80);
+  
+  -webkit-text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+  -moz-text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+  -ms-text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+  -o-text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.7);
+}
+
+body.hidden { display: none; }
+
+h1 {
+  margin: 0;
+}
+
+h1:first-child { margin-top: 100px; }
+
+input {
+  font-family: "Helvetica Neue LT Std", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 1em;
+  line-height: 2em;
+  
+  border: 0;
+  border-radius: 3px;
+  
+  padding: 0 5px;
+  
+  background: rgba(255,255,255,0.5);
+  
+  box-sizing: border-box;
+  width: 320px;
+  
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  
+  -webkit-transition-property: background;
+  -webkit-transition-duration: 0.3s;
+  -moz-transition-property: background;
+  -moz-transition-duration: 0.3s;
+  -ms-transition-property: background;
+  -ms-transition-duration: 0.3s;
+  -o-transition-property: background;
+  -o-transition-duration: 0.3s;
+  transition-property: background;
+  transition-duration: 0.3s;
+}
+
+select {
+  font-size: 1em;
+  line-height: 2em;
+  width: 320px;
+}
+
+input:focus {
+  outline: none;
+  background: white;
+}
+
+input[type=submit] {
+  color: white;
+  background: rgb(40,40,40);
+  padding: 0;
+  margin: 0;
+}
+
+dl dt label {
+  font-size: 0.8em;
+}
+
+dl dd {
+  margin: 0;
+}
+
+dl dd + dt {
+  margin-top: 10px;
+}
