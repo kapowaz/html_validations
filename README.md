@@ -154,3 +154,11 @@ Uniqueness is a difficult characteristic to validate, as it cannot be determined
 This mechanism would function by POSTing the input value to the URL supplied by `data-validation-remote-method`, which would return a JSON response containing either true or false based on whether the value was considered acceptable.
 
 Should the remote validation endpoint be unavailable for any reason then the field will remain in a non-validated, but *not invalid* state.
+
+Running the sample implementation
+---------------------------------
+
+The sample app in this repo is built using [Sinatra](https://github.com/sinatra/sinatra/) and [DataMapper](https://github.com/datamapper/). Simply create a copy of `config/database.example.yml` called `database.yml` with credentials for a local database. For simplicity's sake I'm assuming you're using Bundler:
+
+    $ bundle install
+    $ bundle exec thin start
