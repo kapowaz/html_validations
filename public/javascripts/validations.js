@@ -7,7 +7,7 @@ var Validations = (function(){
       'data-validation-length',
       'data-validation-unique',
       'data-validation-format',
-      'data-validation-identical',
+      'data-validation-confirmation',
       'data-validation-remote-method',
       'data-validation-prerequisite'
     ],
@@ -18,7 +18,7 @@ var Validations = (function(){
       'data-validation-length':         'This field needs to be between {0} and {1} characters long',
       'data-validation-unique':         'This value is not unique',
       'data-validation-format':         'This value should match the format ‘{0}’',
-      'data-validation-identical':      'This field should have the same value as ‘{0}’',
+      'data-validation-confirmation':   'This field should have the same value as ‘{0}’',
       'data-validation-remote-method':  'This value failed the remote method callback',
       'data-validation-prerequisite':   'This field is required as its prerequisite has been met'
     },
@@ -57,10 +57,11 @@ var Validations = (function(){
               if (attribute == 'data-validation-prerequisite') {
                 // handle prerequisites separately to validations
                 field.data('prerequisite', {
-                  target:   field.attr(attribute),
-                  message:  field.attr(attribute + '-message') || module.message(attribute),
-                  value:    field.attr(attribute + '-value') || undefined,
-                  format:   field.attr(attribute + '-format') || undefined
+                  target:       field.attr(attribute),
+                  message:      field.attr(attribute + '-message') || module.message(attribute),
+                  value:        field.attr(attribute + '-value') || undefined,
+                  format:       field.attr(attribute + '-format') || undefined,
+                  lengthRange:  field.attr(attribute + '-length') || undefined
                 });
               } else {
                 if (name == 'length') { name = 'lengthRange'; }
@@ -75,7 +76,7 @@ var Validations = (function(){
           form.data('validations.fields').push(field);
         });
         
-        $(document).on('submit', form, function(e){ e.preventDefault(); module.validateForm(form); });
+        $(document).on('submit', form, function(e){ e.preventDefault(); if (module.validateForm(form) === true) { form.submit(); }; });
         module.forms.push(form);
       });
       
@@ -107,7 +108,7 @@ var Validations = (function(){
       
       if ((e == undefined || form.data('validations.validated')) && 
           ((field.data('validations') && !field.data('prerequisite')) ||
-          (field.data('prerequisite') && module.prerequisiteMet(field)))) {
+          (field.data('prerequisite') && module.prerequisites(field)))) {
         
         // go through each validation…
         jQuery.each(field.data('validations'), function(name){
@@ -118,9 +119,6 @@ var Validations = (function(){
         if (jQuery.map(field.data('validations.errors'), function(){ return true; }).length == 0) {
           field.data('validations.valid', true);
         }
-        
-        // TODO: also check the prerequisite…
-        
       }
       
       return field.data('validations.valid');
@@ -147,21 +145,24 @@ var Validations = (function(){
       return form.data('validations.valid', invalid_fields < 1);
     }, // module.validateForm()
     
-    prerequisiteMet: function(field){
-      var module = this;
-      var form   = field.closest('form');
-      var target = $('[name=' + field.data('prerequisite').target + ']', form);
-      var result = false;
+    prerequisites: function(field){
+      var module  = this;
+      var form    = field.closest('form');
+      var met     = 0;
       
-      switch (true) {
-        case (field.data('prerequisite').value && target.val() == field.data('prerequisite').value):
-        case (field.data('prerequisite').format && new RegExp(field.data('prerequisite').format).test(target.val())):
-          result = true;
-          break;
-      }
+      jQuery.each(field.data('prerequisite').target.split(','), function(i, name){
+        var target = $('[name=' + name + ']');
+        switch (true) {
+          // TODO: also implement tests for lengthRange (and any other types of prerequisite test?)
+          case (field.data('prerequisite').value && target.val() == field.data('prerequisite').value):
+          case (field.data('prerequisite').format && new RegExp(field.data('prerequisite').format).test(target.val())):
+            met += 1;
+            break;
+        }
+      });
       
-      return result;
-    }, // module.prerequisiteMet()
+      return (met == field.data('prerequisite').target.split(',').length);
+    }, // module.prerequisites()
     
     errors: function(field){
       var module = this;
@@ -219,8 +220,12 @@ var Validations = (function(){
         var module = this;
 
         if (field.data('validations').unique) {
-          // TODO: form needs a flag to indicate that we're waiting on a remote response, with a timeout
-          var request = jQuery.post(field.data('validations').unique.rule, field.attr('name') + '=' + field.val(), function(unique){
+          field.data('validations.promise', jQuery.post(field.data('validations').unique.rule, field.attr('name') + '=' + field.val()));
+          
+          module.incrementPending(form);
+          
+          field.data('validations.promise').always(function(){ module.decrementPending(form); });
+          field.data('validations.promise').done(function(unique){
             if (unique == false) {
               field.data('validations.valid', false);
               field.data('validations.errors').unique = field.data('validations').unique.message ||
@@ -229,6 +234,11 @@ var Validations = (function(){
               delete field.data('validations.errors').unique;
             }
           });
+          
+          // resolve if no response received after 15 seconds
+          window.setTimeout(function(){
+            field.data('validations.promise').resolve();
+          }, 15000);
         }
       }, // module.validator.unique()
       
@@ -247,27 +257,27 @@ var Validations = (function(){
         }
       }, // module.validator.format()
       
-      identical: function(field){
+      confirmation: function(field){
         var module  = this;
         var form    = field.closest('form');
 
-        if (field.data('validations').identical != undefined) {
-          var name = field.data('validations').identical.rule;
+        if (field.data('validations').confirmation != undefined) {
+          var name = field.data('validations').confirmation.rule;
           if (field.val() != $('[name=' + name + ']', form).val()) {
             field.data('validations.valid', false);
-            field.data('validations.errors').identical = field.data('validations').identical.message ||
-              module.message('data-validation-identical', name);
+            field.data('validations.errors').confirmation = field.data('validations').confirmation.message ||
+              module.message('data-validation-confirmation', name);
           } else {
-            delete field.data('validations.errors').identical;
+            delete field.data('validations.errors').confirmation;
           }
         }
-      }, // module.validator.identical()
+      }, // module.validator.confirmation()
 
+      // TODO: functionally this is identical to validator.unique, so the two should be merged.
       remoteMethod: function(field){
         var module = this;
 
         if (field.data('validations').remoteMethod != undefined) {
-          // TODO: form needs a flag to indicate that we're waiting on a remote response, with a timeout
           jQuery.post(field.data('validations').remoteMethod.rule, field.attr('name') + '=' + field.val(), function(result){
             if (result == false) {
               field.data('validations.valid', false);
@@ -294,6 +304,20 @@ var Validations = (function(){
       
       return message;
     }, // module.message()
+    
+    incrementPending: function(form){
+      form.data('validations.pending', form.data('validations.pending') + 1);
+    }, // module.incrementPending()
+
+    decrementPending: function(form){
+      if (form.data('validations.pending') > 0) {
+        form.data('validations.pending', form.data('validations.pending') - 1);
+        
+        if (form.data('validations.pending') == 0) {
+          // resolve the promise for the overall form here?
+        }
+      }
+    }, // module.decrementPending()
     
     camelCase: function(string){
       return string.replace(/-([a-z])/g, function(m){

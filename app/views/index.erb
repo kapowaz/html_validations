@@ -24,9 +24,9 @@
     <dt><label for="user_registration_email_confirmation">Enter your email address again</label></dt>
     <dd><input type="email" id="user_registration_email_confirmation" name="email_confirmation"
       data-validation-presence 
-      data-validation-identical="email"
+      data-validation-confirmation="email"
       data-validation-presence-message="You need to confirm your email by typing it again here"
-      data-validation-identical-message="Email address and and confirmation need to be the same"></dd>
+      data-validation-confirmation-message="Email address and and confirmation need to be the same"></dd>
 
     <dt><label for="user_registration_displayname">Enter your name as you'd like it displayed to other users</label></dt>
     <dd><input type="text" id="user_registration_displayname" name="displayname"></dd>
@@ -39,9 +39,9 @@
     <dt><label for="user_registration_password_confirmation">Enter the same password again</label></dt>
     <dd><input type="password" id="user_registration_password_confirmation" name="password_confirmation" 
       data-validation-presence 
-      data-validation-identical="password"
+      data-validation-confirmation="password"
       data-validation-presence-message="You need to confirm your password by typing it again here"
-      data-validation-identical-message="Password and confirmation need to be the same"></dd>
+      data-validation-confirmation-message="Password and confirmation need to be the same"></dd>
       
     <dt><label for="user_registration_referrer">How were you referred to this site?</label></dt>
     <dd><select id="user_registration_referrer" name="referrer">
@@ -52,9 +52,10 @@
     
     <dt><label for="user_registration_referrer_searchengine">Which search engine were you referred by?</label></dt>
     <dd><input type="text" id="user_registration_referrer_searchengine" name="searchengine"
+      data-validation-presence
+      data-validation-presence-message="Please tell us which search engine you were referred by"      
       data-validation-prerequisite="referrer"
-      data-validation-prerequisite-value="searchengine"
-      data-validation-prerequisite-message="Please tell us which search engine you were referred by"></dd>
+      data-validation-prerequisite-value="searchengine"></dd>
   </dl>
   
   <input type="submit" value="Register">

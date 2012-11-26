@@ -4,7 +4,7 @@ Proposal for extending HTML input elements with client-side validation
 Synopsis
 --------
 
-Currently HTML has provisions for simple validation in two ways: a presence (required) field flag, and a maxlength attribute on textarea elements. There is also a (as yet non-standardised) attribute to supply a regular expression pattern which the input value must match to pass. None of these validation types allow the web page to customise the actual message displayed to the visitor when validation fails. Most web applications require far richer validations for this and other reasons, and so web developers frequently need to implement two validation frameworks: one that checks form input at the server, and potentially also at the client, in order to support a more responsive user interface.
+Currently HTML has provisions for simple validation in two ways: a presence (required) field flag, and a maxlength attribute on textarea elements. There is also a (as yet non-standardised) attribute to supply a [regular expression pattern](http://www.whatwg.org/specs/web-apps/current-work/multipage/common-input-element-attributes.html#attr-input-pattern) which the input value must match to pass. None of these validation types allow the web page to customise the actual message displayed to the visitor when validation fails. Most web applications require far richer validations for this and other reasons, and so web developers frequently need to implement two validation frameworks: one that checks form input at the server, and potentially also at the client, in order to support a more responsive user interface.
 
 Modern Object Relational Mapping frameworks such as [DataMapper](http://datamapper.org/) and [ActiveRecord](http://http://ar.rubyonrails.org/) also commonly implement validations as a way of ensuring that a given resource created within the ORM is valid before it is saved. These validations take the form of a rule and one or more messages associated with the rule when the validation isn't met, for example in [DataMapper](http://datamapper.org/docs/validations.html) you might have a data model for registered users that looked like this:
 
@@ -63,16 +63,16 @@ To take the above example of a user registration form, you may then end up with 
       <label for="user_registration_password">Enter a password</label>
       <input type="password" id="user_registration_password" name="password" 
         data-validation-presence 
-        data-validation-identical="password_confirmation"
+        data-validation-confirmation="password_confirmation"
         data-validation-presence-message="You need to enter a password"
-        data-validation-identical-message="Password and confirmation need to be the same">
+        data-validation-confirmation-message="Password and confirmation need to be the same">
     
       <label for="user_registration_password_confirmation">Enter the same password again</label>
       <input type="password" id="user_registration_password_confirmation" name="password_confirmation" 
         data-validation-presence 
-        data-validation-identical="password"
+        data-validation-confirmation="password"
         data-validation-presence-message="You need to confirm your password by typing it again here"
-        data-validation-identical-message="Password and confirmation need to be the same">
+        data-validation-confirmation-message="Password and confirmation need to be the same">
     
       <input type="submit" value="Register">
     </form>
@@ -83,9 +83,9 @@ To explain some of these attributes in a little more detail:
   
 This attribute should specify a URI to which this field (and only this field) can be submitted, by HTTP POST, and which should return a JSON response containing true or false depending on whether the value is unique.
   
-    data-validation-identical
+    data-validation-confirmation
   
-This attribute should specify the input name of a single other field which this input value should have an identical value to, in order to pass validation. This requirement isn't explicitly mutually required, so one field can be required to be identical to another, but the latter need not require be identical to the former.
+This attribute should specify the input name of a single other field to which this field should have an identical value, in order to pass validation. This requirement isn't explicitly mutually required, so one field can be required to be identical to another, but the latter need not require be identical to the former.
   
     data-validation-<type>-message
     
@@ -114,7 +114,7 @@ The more complex validation requirements in web applications stem from fields or
     <input type="text" id="issue_fixed_in_commit" name="fixed_in_commit"
       data-validation-prerequisite="issue_status"
       data-validation-prerequisite-value="fixed"
-      data-validation-prerequisite-message="Please enter the commit identifier this issue was fixed in">
+      data-validation-presence-message="Please enter the commit identifier this issue was fixed in">
       
 As an alternative to supplying a prerequisite *value*, a required format (as a regular expression) can be specified:
 
@@ -124,7 +124,7 @@ As an alternative to supplying a prerequisite *value*, a required format (as a r
     <input type="text" id="input_bar" name="bar"
       data-validation-prerequisite="when_logged"
       data-validation-prerequisite-format="[0-2][0-9]:[0-5][0-9]"
-      data-validation-prerequisite-message="Please enter a *bar*">
+      data-validation-presence-message="Please enter a *bar*">
       
 It is possible to have a form with fields whose presence requirement is predicated on multiple other fields’ states. This is done by providing a comma-separated list of values to the `data-validation-prerequisite` attribute:
 
